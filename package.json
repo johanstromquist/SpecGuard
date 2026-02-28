@@ -1,0 +1,44 @@
+{
+  "name": "specguard",
+  "version": "0.1.0",
+  "description": "Verify your frontend code against your API spec -- without rewriting anything",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "bin": {
+    "specguard": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["openapi", "typescript", "api", "contract", "verification", "static-analysis"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "chalk": "^5.3.0",
+    "cosmiconfig": "^9.0.0",
+    "cosmiconfig-typescript-loader": "^6.1.0",
+    "glob": "^11.0.0",
+    "ts-morph": "^24.0.0",
+    "yargs": "^17.7.2",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.33",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
