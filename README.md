@@ -11,19 +11,19 @@ Existing tools either require rewriting your API client (openapi-typescript, Kub
 ## Install
 
 ```bash
-npm install specguard --save-dev
+npm install @johnmion/specguard --save-dev
 ```
 
 ## Quick Start
 
 ```bash
 # Generate a starter config
-npx specguard init
+npx @johnmion/specguard init
 
 # Edit specguard.config.ts to point at your spec and source files
 
 # Run the scan
-npx specguard scan
+npx @johnmion/specguard scan
 ```
 
 ## Getting Your OpenAPI Spec
@@ -43,7 +43,7 @@ Fetch it once and commit it, or add a script to pull it fresh:
 ```bash
 # Example: pull from a running backend
 curl http://localhost:8000/openapi.json -o openapi.json
-npx specguard scan
+npx @johnmion/specguard scan
 ```
 
 **Your backend doesn't generate one.** Write one by hand. Start minimal -- just the endpoints your frontend actually calls. Even a partial spec catches real bugs. A spec covering 5 endpoints is more useful than no spec at all.
@@ -141,7 +141,7 @@ SpecGuard uses [cosmiconfig](https://github.com/cosmiconfig/cosmiconfig), so con
 
 ```ts
 // specguard.config.ts
-import { defineConfig } from 'specguard';
+import { defineConfig } from '@johnmion/specguard';
 
 export default defineConfig({
   // Path(s) to your OpenAPI spec
@@ -242,7 +242,7 @@ npx lint-staged
 
 ```bash
 # .husky/pre-commit
-npx specguard scan --fail-on error
+npx @johnmion/specguard scan --fail-on error
 ```
 
 **With [lefthook](https://github.com/evilmartians/lefthook):**
@@ -252,7 +252,7 @@ npx specguard scan --fail-on error
 pre-commit:
   commands:
     specguard:
-      run: npx specguard scan --fail-on error
+      run: npx @johnmion/specguard scan --fail-on error
 ```
 
 The `--fail-on error` flag is key -- it sets exit code 1 when errors exist, which blocks the commit. Use `--fail-on warn` if you want stricter enforcement.
@@ -261,10 +261,10 @@ The `--fail-on error` flag is key -- it sets exit code 1 when errors exist, whic
 
 ```bash
 # Fail the build if any errors exist
-npx specguard scan --fail-on error
+npx @johnmion/specguard scan --fail-on error
 
 # JSON output for downstream processing
-npx specguard scan --output json > specguard-report.json
+npx @johnmion/specguard scan --output json > specguard-report.json
 ```
 
 **GitHub Actions example:**
@@ -282,13 +282,13 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
-      - run: npx specguard scan --fail-on error
+      - run: npx @johnmion/specguard scan --fail-on error
 ```
 
 ## Programmatic API
 
 ```ts
-import { scan, loadConfig } from 'specguard';
+import { scan, loadConfig } from '@johnmion/specguard';
 
 const result = await scan({ cwd: '/path/to/project' });
 
@@ -303,7 +303,7 @@ for (const m of result.mismatches) {
 You can also pass config directly:
 
 ```ts
-import { scan } from 'specguard';
+import { scan } from '@johnmion/specguard';
 
 const result = await scan({
   config: {
@@ -390,7 +390,7 @@ Add SpecGuard to your project instructions so the agent runs it after writing AP
 
 ```markdown
 After modifying any file that calls fetch() or an API wrapper, run:
-  npx specguard scan --fail-on error
+  npx @johnmion/specguard scan --fail-on error
 Fix any errors before considering the task complete.
 ```
 

@@ -1,6 +1,6 @@
 {
-  "name": "specguard",
-  "version": "0.1.0",
+  "name": "@johnmion/specguard",
+  "version": "1.0.0",
   "description": "Verify your frontend code against your API spec -- without rewriting anything",
   "type": "module",
   "main": "./dist/index.js",
@@ -20,6 +20,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
+  "files": ["dist", "LICENSE", "README.md"],
   "keywords": ["openapi", "typescript", "api", "contract", "verification", "static-analysis"],
   "license": "MIT",
   "engines": {
