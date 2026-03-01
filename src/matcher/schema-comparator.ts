@@ -18,6 +18,7 @@ export function compareShapes(
   path: string = '',
 ): Mismatch[] {
   const mismatches: Mismatch[] = [];
+  const endpointLabel = `${ctx.endpoint.method} ${ctx.endpoint.pathTemplate}`;
 
   function pushMismatch(kind: MismatchKind, message: string, propPath?: string): void {
     if (ctx.rules[kind] !== 'off') {
@@ -58,7 +59,7 @@ export function compareShapes(
   if (frontend.kind !== spec.kind && frontend.kind !== 'union' && spec.kind !== 'union') {
     pushMismatch(
       'type-mismatch',
-      `Type mismatch${path ? ` at ${path}` : ''}: frontend expects ${frontend.kind} but spec defines ${spec.kind}`,
+      `Type mismatch${path ? ` at ${path}` : ''}: frontend expects ${frontend.kind} but spec defines ${spec.kind} for ${endpointLabel}`,
     );
     return mismatches;
   }
@@ -75,7 +76,7 @@ export function compareShapes(
       if (!(name in specProps)) {
         pushMismatch(
           'missing-in-spec',
-          `Property "${propPath}" exists in frontend type${formatTypeName(frontend.typeName, mappingInfo)} but not in spec`,
+          `Property "${propPath}" exists in frontend type${formatTypeName(frontend.typeName, mappingInfo)} but not in spec for ${endpointLabel}`,
           propPath,
         );
       } else {
@@ -87,7 +88,7 @@ export function compareShapes(
         if (prop.required && !specProp.required) {
           pushMismatch(
             'required-mismatch',
-            `Property "${propPath}" is required in frontend but optional in spec`,
+            `Property "${propPath}" is required in frontend but optional in spec for ${endpointLabel}`,
             propPath,
           );
         }
@@ -101,13 +102,13 @@ export function compareShapes(
         if (prop.required) {
           pushMismatch(
             'missing-in-frontend',
-            `Required property "${propPath}" from spec is not in frontend type${formatTypeName(frontend.typeName, mappingInfo)}`,
+            `Required property "${propPath}" from spec is not in frontend type${formatTypeName(frontend.typeName, mappingInfo)} for ${endpointLabel}`,
             propPath,
           );
         } else {
           pushMismatch(
             'extra-in-spec',
-            `Optional property "${propPath}" from spec is not used in frontend`,
+            `Optional property "${propPath}" from spec is not used in frontend for ${endpointLabel}`,
             propPath,
           );
         }

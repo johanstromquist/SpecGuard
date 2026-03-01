@@ -76,7 +76,7 @@ export function matchEndpoint(
       if (!specParamNames.has(paramName)) {
         pushMismatch(
           'missing-in-spec',
-          `Query parameter "${paramName}" is used in frontend but not defined in spec for ${matched.pathTemplate}`,
+          `Query parameter "${paramName}" is used in frontend but not defined in spec for ${matched.method} ${matched.pathTemplate}`,
           matched,
           `query.${paramName}`,
         );
@@ -88,7 +88,7 @@ export function matchEndpoint(
       if (specParam.required && !(specParam.name in url.queryParams)) {
         pushMismatch(
           'missing-in-frontend',
-          `Required query parameter "${specParam.name}" from spec is missing in frontend call to ${matched.pathTemplate}`,
+          `Required query parameter "${specParam.name}" from spec is missing in frontend call to ${matched.method} ${matched.pathTemplate}`,
           matched,
           `query.${specParam.name}`,
         );
