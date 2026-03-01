@@ -63,4 +63,26 @@ describe('matchPath', () => {
     const result = matchPath(makeUrl('/api/users/123/posts'), endpoints);
     expect(result).toBeNull();
   });
+
+  it('prefers method-matching endpoint when path has multiple methods', () => {
+    const result = matchPath(makeUrl('/api/users'), endpoints, 'POST');
+    expect(result?.method).toBe('POST');
+    expect(result?.pathTemplate).toBe('/api/users');
+  });
+
+  it('falls back to first path match when method does not match any', () => {
+    const result = matchPath(makeUrl('/api/users'), endpoints, 'DELETE');
+    expect(result?.pathTemplate).toBe('/api/users');
+  });
+
+  it('matches correct method on parameterized paths', () => {
+    const multiMethodEndpoints = [
+      makeEndpoint('GET', '/api/items/{id}'),
+      makeEndpoint('PUT', '/api/items/{id}'),
+      makeEndpoint('DELETE', '/api/items/{id}'),
+    ];
+    expect(matchPath(makeUrl('/api/items/99'), multiMethodEndpoints, 'PUT')?.method).toBe('PUT');
+    expect(matchPath(makeUrl('/api/items/99'), multiMethodEndpoints, 'DELETE')?.method).toBe('DELETE');
+    expect(matchPath(makeUrl('/api/items/99'), multiMethodEndpoints, 'GET')?.method).toBe('GET');
+  });
 });

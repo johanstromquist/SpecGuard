@@ -46,7 +46,7 @@ export function matchEndpoint(
     url = { ...url, resolved: stripped };
   }
 
-  const matched = plugin.matchUrl(url, endpoints);
+  const matched = plugin.matchUrl(url, endpoints, callSite.method);
 
   if (!matched) {
     pushMismatch(

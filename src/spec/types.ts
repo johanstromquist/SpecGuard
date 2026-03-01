@@ -4,5 +4,5 @@ export interface SpecPlugin {
   name: string;
   supportedExtensions: string[];
   parse(specPath: string): Promise<SpecEndpoint[]>;
-  matchUrl(url: UrlPattern, endpoints: SpecEndpoint[]): SpecEndpoint | null;
+  matchUrl(url: UrlPattern, endpoints: SpecEndpoint[], method?: string): SpecEndpoint | null;
 }

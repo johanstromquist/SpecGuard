@@ -85,7 +85,7 @@ export const openApiPlugin: SpecPlugin = {
   name: 'openapi',
   supportedExtensions: ['.json', '.yaml', '.yml'],
   parse,
-  matchUrl(url: UrlPattern, endpoints: SpecEndpoint[]) {
-    return matchPath(url, endpoints);
+  matchUrl(url: UrlPattern, endpoints: SpecEndpoint[], method?: string) {
+    return matchPath(url, endpoints, method);
   },
 };

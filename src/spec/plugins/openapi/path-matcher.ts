@@ -7,6 +7,7 @@ import type { SpecEndpoint, UrlPattern } from '../../../core/types.js';
 export function matchPath(
   url: UrlPattern,
   endpoints: SpecEndpoint[],
+  method?: string,
 ): SpecEndpoint | null {
   const resolved = url.resolved;
   if (!resolved) return null;
@@ -17,6 +18,7 @@ export function matchPath(
   const urlSegments = resolved.split('/').filter(Boolean);
   let bestMatch: SpecEndpoint | null = null;
   let bestScore = -1;
+  let bestMethodMatch = false;
 
   for (const endpoint of endpoints) {
     const templateSegments = endpoint.pathTemplate.split('/').filter(Boolean);
@@ -51,9 +53,15 @@ export function matchPath(
       }
     }
 
-    if (matches && score > bestScore) {
+    if (!matches) continue;
+
+    const methodMatches = method !== undefined && endpoint.method === method;
+
+    // Prefer method-matching endpoint at equal path scores
+    if (score > bestScore || (score === bestScore && methodMatches && !bestMethodMatch)) {
       bestScore = score;
       bestMatch = endpoint;
+      bestMethodMatch = methodMatches;
     }
   }
 
