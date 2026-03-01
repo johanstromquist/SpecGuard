@@ -1,6 +1,6 @@
 {
   "name": "@johnmion/specguard",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Verify your frontend code against your API spec -- without rewriting anything",
   "type": "module",
   "main": "./dist/index.js",

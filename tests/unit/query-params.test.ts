@@ -75,6 +75,23 @@ describe('query parameter validation', () => {
     )).toBe(true);
   });
 
+  it('skips dynamic query params from URLSearchParams', () => {
+    const callSite: CallSite = {
+      file: 'test.ts',
+      line: 1,
+      method: 'GET',
+      url: {
+        segments: [{ value: 'users', dynamic: false }],
+        resolved: '/users',
+        queryParams: { '{dynamic}': true as string | true },
+      },
+      callee: 'fetch',
+    };
+
+    const { mismatches } = matchEndpoint(callSite, [endpoint], plugin, '', rules);
+    expect(mismatches.some((m) => m.kind === 'missing-in-spec')).toBe(false);
+  });
+
   it('reports unknown query param', () => {
     const callSite: CallSite = {
       file: 'test.ts',

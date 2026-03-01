@@ -70,8 +70,9 @@ export function matchEndpoint(
     const specQueryParams = matched.params.filter((p) => p.in === 'query');
     const specParamNames = new Set(specQueryParams.map((p) => p.name));
 
-    // Check for unknown query params in frontend
+    // Check for unknown query params in frontend (skip dynamic/unresolvable params)
     for (const paramName of Object.keys(url.queryParams)) {
+      if (paramName.includes('{dynamic}')) continue;
       if (!specParamNames.has(paramName)) {
         pushMismatch(
           'missing-in-spec',
