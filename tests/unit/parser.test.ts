@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { openApiPlugin } from '../../src/spec/plugins/openapi/parser.js';
 
@@ -32,5 +34,37 @@ describe('OpenAPI parser', () => {
     const deprecated = endpoints.find((e) => e.id === 'GET /api/deprecated');
     expect(deprecated).toBeDefined();
     expect(deprecated!.deprecated).toBe(true);
+  });
+
+  it('rejects remote references by default', async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'specguard-openapi-'));
+    const remoteRefPath = path.join(tempDir, 'remote-ref.yaml');
+
+    try {
+      await writeFile(
+        remoteRefPath,
+        [
+          'openapi: "3.0.3"',
+          'info:',
+          '  title: Remote Ref',
+          '  version: "1.0"',
+          'paths:',
+          '  /remote:',
+          '    get:',
+          '      responses:',
+          '        "200":',
+          '          description: ok',
+          '          content:',
+          '            application/json:',
+          '              schema:',
+          '                $ref: "https://example.invalid/schema.json"',
+          '',
+        ].join('\n'),
+      );
+
+      await expect(openApiPlugin.parse(remoteRefPath)).rejects.toThrow();
+    } finally {
+      await rm(tempDir, { recursive: true, force: true });
+    }
   });
 });

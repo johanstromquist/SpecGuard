@@ -139,6 +139,8 @@ src/api.ts
 
 SpecGuard uses [cosmiconfig](https://github.com/cosmiconfig/cosmiconfig), so config can live in `specguard.config.ts`, `.specguardrc`, `specguard.config.js`, or the `"specguard"` key in `package.json`.
 
+In CI, SpecGuard only discovers non-executable config formats by default (`package.json`, `.specguardrc`, JSON, YAML). Set `SPECGUARD_ALLOW_EXECUTABLE_CONFIG=true` only for trusted repositories if you need JS/TS config loading.
+
 ```ts
 // specguard.config.ts
 import { defineConfig } from '@johnmion/specguard';
@@ -178,6 +180,8 @@ export default defineConfig({
   tsconfig: './tsconfig.json',
 });
 ```
+
+OpenAPI `$ref` values are resolved from local files under the spec directory by default. Remote HTTP(S) references are blocked during parsing; vendor remote schemas into your repo before scanning untrusted pull requests.
 
 ### Custom Fetch Wrappers
 

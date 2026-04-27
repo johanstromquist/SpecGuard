@@ -59,14 +59,42 @@ export function defineConfig(config: z.input<typeof configSchema>): z.input<type
   return config;
 }
 
+const SAFE_SEARCH_PLACES = [
+  'package.json',
+  '.specguardrc',
+  '.specguardrc.json',
+  '.specguardrc.yaml',
+  '.specguardrc.yml',
+  'specguard.config.json',
+  'specguard.config.yaml',
+  'specguard.config.yml',
+];
+
+const EXECUTABLE_SEARCH_PLACES = [
+  ...SAFE_SEARCH_PLACES,
+  'specguard.config.js',
+  'specguard.config.cjs',
+  'specguard.config.mjs',
+  'specguard.config.ts',
+];
+
+function executableConfigAllowed(): boolean {
+  const value = process.env.SPECGUARD_ALLOW_EXECUTABLE_CONFIG;
+  if (value) {
+    return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase());
+  }
+  return process.env.CI !== 'true';
+}
+
 export async function loadConfig(
   overrides?: Partial<z.input<typeof configSchema>>,
 ): Promise<SpecGuardConfig> {
-  const explorer = cosmiconfig('specguard', {
-    loaders: {
-      '.ts': TypeScriptLoader(),
-    },
-  });
+  const allowExecutableConfig = executableConfigAllowed();
+  const explorerOptions = {
+    searchPlaces: allowExecutableConfig ? EXECUTABLE_SEARCH_PLACES : SAFE_SEARCH_PLACES,
+    ...(allowExecutableConfig ? { loaders: { '.ts': TypeScriptLoader() } } : {}),
+  };
+  const explorer = cosmiconfig('specguard', explorerOptions);
 
   const result = await explorer.search();
   const raw = result?.config ?? {};

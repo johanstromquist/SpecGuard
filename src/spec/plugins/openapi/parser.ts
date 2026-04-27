@@ -1,4 +1,6 @@
 import SwaggerParser from '@apidevtools/swagger-parser';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import type { OpenAPIV3 } from 'openapi-types';
 import type { ParamDef, SpecEndpoint, UrlPattern } from '../../../core/types.js';
 import type { SpecPlugin } from '../../types.js';
@@ -6,6 +8,16 @@ import { schemaToTypeShape } from './normalizer.js';
 import { matchPath } from './path-matcher.js';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete'] as const;
+type RefFileInfo = { url: string };
+
+function refPathFromUrl(url: string): string {
+  return url.startsWith('file://') ? fileURLToPath(url) : url;
+}
+
+function isInsideDirectory(root: string, candidate: string): boolean {
+  const relative = path.relative(root, candidate);
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
 
 function parseParam(param: OpenAPIV3.ParameterObject): ParamDef {
   return {
@@ -17,7 +29,17 @@ function parseParam(param: OpenAPIV3.ParameterObject): ParamDef {
 }
 
 async function parse(specPath: string): Promise<SpecEndpoint[]> {
-  const api = (await SwaggerParser.dereference(specPath)) as OpenAPIV3.Document;
+  const specRoot = path.dirname(path.resolve(specPath));
+  const api = (await SwaggerParser.dereference(specPath, {
+    resolve: {
+      http: { canRead: false },
+      file: {
+        canRead(file: RefFileInfo) {
+          return isInsideDirectory(specRoot, path.resolve(refPathFromUrl(file.url)));
+        },
+      },
+    },
+  })) as OpenAPIV3.Document;
   const endpoints: SpecEndpoint[] = [];
 
   if (!api.paths) return endpoints;
